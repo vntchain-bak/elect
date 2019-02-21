@@ -1,0 +1,7 @@
+{
+    "sender":"0x122369f04f32269598789998de33e3d56e2c507a",
+    "password":"",
+    "keystoreDir":"./tests/keystore",
+    "rpcUrl":"localhost:8880",
+    "chainID":1234
+}
