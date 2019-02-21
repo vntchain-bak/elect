@@ -3,6 +3,8 @@ package elect
 import (
 	"reflect"
 	"testing"
+
+	"github.com/vntchain/go-vnt/common"
 )
 
 func TestElectionLoadCfg(t *testing.T) {
@@ -12,10 +14,10 @@ func TestElectionLoadCfg(t *testing.T) {
 	}
 
 	cfg := &Config{
-		Sender:      "0x122369f04f32269598789998de33e3d56e2c507a",
+		Sender:      common.HexToAddress("0x122369f04f32269598789998de33e3d56e2c507a"),
 		Password:    "",
 		KeystoreDir: "./tests/keystore",
-		RpcUrl:      "localhost:8880",
+		RpcUrl:      "http://localhost:8880",
 		ChainID:     1234,
 	}
 
