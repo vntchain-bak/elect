@@ -130,9 +130,6 @@ func (e *Election) Unstake() (common.Hash, error) {
 	if err != nil {
 		return emptyHash, err
 	}
-	if stake.Owner != e.cfg.Sender {
-		return emptyHash, fmt.Errorf("account: %s has no stake", e.cfg.Sender)
-	}
 
 	// 距离上次抵押超过24小时
 	unstakeTime := big.NewInt(0).Add(stake.LastStakeTimeStamp, big.NewInt(vntelection.OneDay))
