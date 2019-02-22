@@ -59,3 +59,50 @@ var unStakeCmd = &cobra.Command{
 		}
 	},
 }
+
+var queryCmd = &cobra.Command{
+	Use:   "query",
+	Short: "Query election data",
+	Long: `Query supports getting the stake or vote information of account in config, 
+getting witness candidates list and rest bounty.`, // TODO 修改描述
+	Example: `elect query stake/vote/candidates/rest`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) != 1 {
+			cmd.Help()
+			return
+		}
+
+		var (
+			ret []byte
+			err error
+			e   *elect.Election
+		)
+
+		e, err = elect.NewElection()
+		if err != nil {
+			panic(err)
+		}
+
+		switch args[0] {
+		case "stake":
+			ret, err = e.QueryStake()
+		case "vote":
+			ret, err = e.QueryVote()
+		case "candidates":
+			ret, err = e.QueryCandidates()
+		case "rest":
+			ret, err = e.QueryRestVNTBounty()
+		default:
+			fmt.Printf("error: query not support %s\n", args[0])
+			fmt.Printf("\nQuery help:\n")
+			cmd.Help()
+			return
+		}
+
+		if err != nil {
+			fmt.Printf("error: %s\n", err)
+		} else {
+			fmt.Printf("Result:\n%s\n", string(ret))
+		}
+	},
+}
