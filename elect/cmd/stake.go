@@ -30,9 +30,32 @@ var stakeCmd = &cobra.Command{
 			panic(err)
 		}
 		if txhash, err := e.Stake(stakeCnt); err != nil {
-			fmt.Println(err)
+			fmt.Printf("error: %s\n", err)
 		} else {
 			fmt.Printf("stake transaction send success, tx hash: %s\n", txhash.String())
+		}
+	},
+}
+
+var unStakeCmd = &cobra.Command{
+	Use:     "unstake",
+	Short:   "Unstake vnt token",
+	Long:    "Unstake provides pre-check before create a unstake transaction, and sends the ex if it may success.",
+	Example: "elect unstake",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) > 0 {
+			cmd.Help()
+			return
+		}
+
+		e, err := elect.NewElection()
+		if err != nil {
+			panic(err)
+		}
+		if txhash, err := e.Unstake(); err != nil {
+			fmt.Printf("error: %s\n", err)
+		} else {
+			fmt.Printf("unstake transaction send success, tx hash: %s\n", txhash.String())
 		}
 	},
 }

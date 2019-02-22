@@ -1,18 +1,18 @@
 package elect
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
-	"os"
-
-	"context"
-
 	"math/big"
+	"os"
+	"time"
 
 	"github.com/vntchain/go-vnt/accounts"
 	"github.com/vntchain/go-vnt/accounts/keystore"
 	"github.com/vntchain/go-vnt/common"
 	"github.com/vntchain/go-vnt/core/types"
+	vntelection "github.com/vntchain/go-vnt/core/vm/election"
 	"github.com/vntchain/go-vnt/vntclient"
 )
 
@@ -97,7 +97,7 @@ func loadKSWallet(ksDir string, account accounts.Account) accounts.Wallet {
 	return nil
 }
 
-// Stake return a tx hash if send transaction success or an error when f the tx may be failed in execution.
+// Stake returns a tx hash of staking VNT if passed condition check and tx has been send, or an error if failed.
 func (e *Election) Stake(stakeCnt int) (common.Hash, error) {
 	// 至少1个VNT
 	if stakeCnt <= 1 {
@@ -123,7 +123,33 @@ func (e *Election) Stake(stakeCnt int) (common.Hash, error) {
 	return e.signAndSendTx(unSignTx)
 }
 
-// signAndSendTx return tx hash if sign and send transaction success.
+// Unstake returns a tx hash of staking VNT if passed condition check and tx has been send, or an error if failed.
+func (e *Election) Unstake() (common.Hash, error) {
+	// 用户当前有抵押的VNT
+	stake, err := e.vc.StakeAt(e.ctx, e.cfg.Sender)
+	if err != nil {
+		return emptyHash, err
+	}
+	if stake.Owner != e.cfg.Sender {
+		return emptyHash, fmt.Errorf("account: %s has no stake", e.cfg.Sender)
+	}
+
+	// 距离上次抵押超过24小时
+	unstakeTime := big.NewInt(0).Add(stake.LastStakeTimeStamp, big.NewInt(vntelection.OneDay))
+	now := big.NewInt(time.Now().Unix())
+	if now.Cmp(unstakeTime) < 0 {
+		return emptyHash, fmt.Errorf("cannot unstake in 24 hours")
+	}
+
+	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, 30000, big.NewInt(18000000000), "unStake")
+	if err != nil {
+		return emptyHash, err
+	}
+
+	return e.signAndSendTx(unSignTx)
+}
+
+// signAndSendTx returns tx hash if sign and send transaction success.
 func (e *Election) signAndSendTx(unSignTx *types.Transaction) (common.Hash, error) {
 	tx, err := e.wallet.SignTxWithPassphrase(e.account, e.cfg.Password, unSignTx, big.NewInt(int64(e.cfg.ChainID)))
 	if err != nil {
