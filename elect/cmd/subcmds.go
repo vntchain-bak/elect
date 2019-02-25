@@ -106,11 +106,34 @@ var unregisterWitnessCmd = &cobra.Command{
 	},
 }
 
+var vote = &cobra.Command{
+	Use:     "vote",
+	Short:   "Vote witness candidate, up to 30 witnesses",
+	Long:    "Vote provides pre-check before create a voting witness transaction, and sends the tx if it may success.",
+	Example: `elect vote "0x123....456" "0x789...123"`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) <= 0 {
+			cmd.Help()
+			return
+		}
+
+		e, err := elect.NewElection()
+		if err != nil {
+			panic(err)
+		}
+		if txhash, err := e.VoteWitness(args); err != nil {
+			fmt.Printf("error: %s\n", err)
+		} else {
+			fmt.Printf("vote witness transaction send success, tx hash: %s\n", txhash.String())
+		}
+	},
+}
+
 var queryCmd = &cobra.Command{
 	Use:   "query",
 	Short: "Query election data",
 	Long: `Query supports getting the stake or vote information of account in config, 
-getting witness candidates list and rest bounty.`, // TODO 修改描述
+getting witness candidates list and rest bounty.`,
 	Example: `elect query stake/vote/candidates/rest`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) != 1 {

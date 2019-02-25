@@ -20,6 +20,7 @@ import (
 
 var (
 	emptyHash = common.Hash{}
+	emptyAddr = common.Address{}
 )
 
 type Election struct {
@@ -130,7 +131,7 @@ func (e *Election) Unstake() (common.Hash, error) {
 	// 用户当前有抵押的VNT
 	stake, err := e.vc.StakeAt(e.ctx, e.cfg.Sender)
 	if err != nil {
-		return emptyHash, err
+		return emptyHash, fmt.Errorf("you have no stake")
 	}
 
 	if stake != nil {
@@ -203,6 +204,52 @@ func (e *Election) UnregisterWitness() (common.Hash, error) {
 
 	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, 30000,
 		big.NewInt(18000000000), "unregisterWitness")
+	if err != nil {
+		return emptyHash, err
+	}
+
+	return e.signAndSendTx(unSignTx)
+}
+
+func (e *Election) VoteWitness(wits []string) (common.Hash, error) {
+	// 所投候选人不得超过30人
+	if len(wits) > 30 {
+		return emptyHash, fmt.Errorf("vote too may witness, at most 30")
+	}
+
+	// 有抵押的VNT代币
+	_, err := e.vc.StakeAt(e.ctx, e.cfg.Sender)
+	if err != nil {
+		if err.Error() == errNotFound {
+			err = fmt.Errorf("please stake before vote")
+		}
+		return emptyHash, err
+	}
+
+	// 距离上次投票或设置代理超过24小时
+	vote, err := e.vc.VoteAt(e.ctx, e.cfg.Sender)
+	if err != nil && err.Error() != errNotFound {
+		return emptyHash, err
+	}
+	if vote != nil {
+		nextVoteTime := big.NewInt(0).Add(vote.LastVoteTimeStamp, big.NewInt(vntelection.OneDay))
+		now := big.NewInt(time.Now().Unix())
+		if now.Cmp(nextVoteTime) < 0 {
+			return emptyHash, fmt.Errorf("cannot vote twice within 24 hours")
+		}
+	}
+
+	// 需要转换为地址
+	witnesses := make([]common.Address, len(wits))
+	for i, w := range wits {
+		if len(w) != len(emptyAddr.String()) {
+			return emptyHash, fmt.Errorf("invalid witness address: %s", w)
+		}
+		witnesses[i] = common.HexToAddress(w)
+	}
+
+	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, 30000,
+		big.NewInt(18000000000), "voteWitnesses", witnesses)
 	if err != nil {
 		return emptyHash, err
 	}
