@@ -40,7 +40,7 @@ var stakeCmd = &cobra.Command{
 var unStakeCmd = &cobra.Command{
 	Use:     "unstake",
 	Short:   "Unstake vnt token",
-	Long:    "Unstake provides pre-check before create a unstake transaction, and sends the ex if it may success.",
+	Long:    "Unstake provides pre-check before create a unstake transaction, and sends the tx if it may success.",
 	Example: "elect unstake",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) > 0 {
@@ -56,6 +56,29 @@ var unStakeCmd = &cobra.Command{
 			fmt.Printf("error: %s\n", err)
 		} else {
 			fmt.Printf("unstake transaction send success, tx hash: %s\n", txhash.String())
+		}
+	},
+}
+
+var registerWitnessCmd = &cobra.Command{
+	Use:     "register",
+	Short:   "Register witness candidate",
+	Long:    "Register provides pre-check before create a register witness transaction, and sends the tx if it may success.",
+	Example: "elect register nodeName nodeUrl website",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) != 3 {
+			cmd.Help()
+			return
+		}
+
+		e, err := elect.NewElection()
+		if err != nil {
+			panic(err)
+		}
+		if txhash, err := e.RegisterWitness(args[0], args[1], args[2]); err != nil {
+			fmt.Printf("error: %s\n", err)
+		} else {
+			fmt.Printf("register witness transaction send success, tx hash: %s\n", txhash.String())
 		}
 	},
 }

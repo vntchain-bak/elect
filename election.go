@@ -8,6 +8,8 @@ import (
 	"os"
 	"time"
 
+	"unicode"
+
 	"github.com/vntchain/go-vnt/accounts"
 	"github.com/vntchain/go-vnt/accounts/keystore"
 	"github.com/vntchain/go-vnt/common"
@@ -144,6 +146,61 @@ func (e *Election) Unstake() (common.Hash, error) {
 	}
 
 	return e.signAndSendTx(unSignTx)
+}
+
+func (e *Election) RegisterWitness(nodeName, nodeUrl, website string) (common.Hash, error) {
+	// 节点名称必填，由数字和小写字母组成，长度在[3,20]区间。
+	// 网址必填，长度在[3,60]区间。
+	if err := checkCandi(nodeName, website); err != nil {
+		return emptyHash, err
+	}
+
+	// 名称和网址不得与其他候选人有重复，不可重复注册
+	candidates, err := e.vc.WitnessCandidates(e.ctx)
+	if err != nil {
+		return emptyHash, err
+	}
+	for _, c := range candidates {
+		if c.Owner != e.cfg.Sender.String() {
+			if c.Url == nodeUrl || c.Website == website {
+				return emptyHash, fmt.Errorf("candidate's name or website url is duplicated with a candidate")
+			}
+		} else if c.Active {
+			return emptyHash, fmt.Errorf("candidate is already registered")
+		}
+	}
+
+	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, 30000, big.NewInt(18000000000),
+		"registerWitness", []byte(nodeUrl), []byte(website), []byte(nodeName))
+	if err != nil {
+		return emptyHash, err
+	}
+
+	return e.signAndSendTx(unSignTx)
+}
+
+func checkCandi(name string, website string) error {
+	// length check
+	if len(name) < 3 || len(name) > 20 {
+		return fmt.Errorf("the length of candidate's name should between [3, 20]")
+	}
+	if len(website) < 3 || len(website) > 60 {
+		return fmt.Errorf("the length of candidate's website url should between [3, 60]")
+	}
+
+	digitalAndLower := func(s string) bool {
+		for _, ru := range s {
+			if !unicode.IsDigit(ru) && !unicode.IsLower(ru) {
+				return false
+			}
+		}
+		return true
+	}
+	if !digitalAndLower(name) {
+		return fmt.Errorf("andidate's name should consist of digits and lowercase letters")
+	}
+
+	return nil
 }
 
 // signAndSendTx returns tx hash if sign and send transaction success.
