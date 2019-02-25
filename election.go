@@ -133,11 +133,13 @@ func (e *Election) Unstake() (common.Hash, error) {
 		return emptyHash, err
 	}
 
-	// 距离上次抵押超过24小时
-	unstakeTime := big.NewInt(0).Add(stake.LastStakeTimeStamp, big.NewInt(vntelection.OneDay))
-	now := big.NewInt(time.Now().Unix())
-	if now.Cmp(unstakeTime) < 0 {
-		return emptyHash, fmt.Errorf("cannot unstake in 24 hours")
+	if stake != nil {
+		// 距离上次抵押超过24小时
+		unstakeTime := big.NewInt(0).Add(stake.LastStakeTimeStamp, big.NewInt(vntelection.OneDay))
+		now := big.NewInt(time.Now().Unix())
+		if now.Cmp(unstakeTime) < 0 {
+			return emptyHash, fmt.Errorf("cannot unstake in 24 hours")
+		}
 	}
 
 	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, 30000, big.NewInt(18000000000), "unStake")
@@ -157,16 +159,18 @@ func (e *Election) RegisterWitness(nodeName, nodeUrl, website string) (common.Ha
 
 	// 名称和网址不得与其他候选人有重复，不可重复注册
 	candidates, err := e.vc.WitnessCandidates(e.ctx)
-	if err != nil {
+	if err != nil && err.Error() != errNotFound {
 		return emptyHash, err
 	}
-	for _, c := range candidates {
-		if c.Owner != e.cfg.Sender.String() {
-			if c.Url == nodeUrl || c.Website == website {
-				return emptyHash, fmt.Errorf("candidate's name or website url is duplicated with a candidate")
+	if candidates != nil {
+		for _, c := range candidates {
+			if c.Owner != e.cfg.Sender.String() {
+				if c.Url == nodeUrl || c.Website == website {
+					return emptyHash, fmt.Errorf("candidate's name or website url is duplicated with a candidate")
+				}
+			} else if c.Active {
+				return emptyHash, fmt.Errorf("candidate is already registered")
 			}
-		} else if c.Active {
-			return emptyHash, fmt.Errorf("candidate is already registered")
 		}
 	}
 

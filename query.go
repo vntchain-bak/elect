@@ -2,11 +2,17 @@ package elect
 
 import (
 	"encoding/json"
+	"fmt"
 )
+
+var errNotFound = "not found"
 
 func (e *Election) QueryStake() ([]byte, error) {
 	stake, err := e.vc.StakeAt(e.ctx, e.cfg.Sender)
 	if err != nil {
+		if err.Error() == errNotFound {
+			return nil, fmt.Errorf("no stake information for account: %s", e.cfg.Sender.String())
+		}
 		return nil, err
 	}
 
@@ -16,6 +22,9 @@ func (e *Election) QueryStake() ([]byte, error) {
 func (e *Election) QueryVote() ([]byte, error) {
 	voter, err := e.vc.VoteAt(e.ctx, e.cfg.Sender)
 	if err != nil {
+		if err.Error() == errNotFound {
+			return nil, fmt.Errorf("no vote information for account: %s", e.cfg.Sender.String())
+		}
 		return nil, err
 	}
 
@@ -25,6 +34,9 @@ func (e *Election) QueryVote() ([]byte, error) {
 func (e *Election) QueryCandidates() ([]byte, error) {
 	candidates, err := e.vc.WitnessCandidates(e.ctx)
 	if err != nil {
+		if err.Error() == errNotFound {
+			return nil, fmt.Errorf("witness candidate list is empty")
+		}
 		return nil, err
 	}
 
