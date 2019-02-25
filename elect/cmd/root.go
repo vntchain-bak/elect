@@ -27,5 +27,10 @@ func Execute() {
 func init() {
 	// Set flags of elect command
 	// Add sub commands
-	rootCmd.AddCommand(stakeCmd, unStakeCmd, registerWitnessCmd, queryCmd)
+	rootCmd.AddCommand(
+		stakeCmd,
+		unStakeCmd,
+		registerWitnessCmd,
+		unregisterWitnessCmd,
+		queryCmd)
 }

@@ -183,6 +183,33 @@ func (e *Election) RegisterWitness(nodeName, nodeUrl, website string) (common.Ha
 	return e.signAndSendTx(unSignTx)
 }
 
+func (e *Election) UnregisterWitness() (common.Hash, error) {
+	// 账号已注册为见证人
+	candidates, err := e.vc.WitnessCandidates(e.ctx)
+	if err != nil && err.Error() != errNotFound {
+		return emptyHash, err
+	}
+	if candidates != nil {
+		find := false
+		for _, c := range candidates {
+			if c.Owner == e.cfg.Sender.String() && c.Active {
+				find = true
+			}
+		}
+		if !find {
+			return emptyHash, fmt.Errorf("account: %s is not registered", e.cfg.Sender)
+		}
+	}
+
+	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, 30000,
+		big.NewInt(18000000000), "unregisterWitness")
+	if err != nil {
+		return emptyHash, err
+	}
+
+	return e.signAndSendTx(unSignTx)
+}
+
 func checkCandi(name string, website string) error {
 	// length check
 	if len(name) < 3 || len(name) > 20 {
