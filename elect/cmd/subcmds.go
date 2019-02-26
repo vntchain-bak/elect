@@ -106,7 +106,7 @@ var unregisterWitnessCmd = &cobra.Command{
 	},
 }
 
-var vote = &cobra.Command{
+var voteCmd = &cobra.Command{
 	Use:     "vote",
 	Short:   "Vote witness candidate, up to 30 witnesses",
 	Long:    "Vote provides checks before creating a voting witness transaction, and sends the tx if it may success.",
@@ -129,7 +129,7 @@ var vote = &cobra.Command{
 	},
 }
 
-var cancelVote = &cobra.Command{
+var cancelVoteCmd = &cobra.Command{
 	Use:     "cancelVote",
 	Short:   "Cancel the vote for witness candidate",
 	Long:    "Cancel vote provides checks before creating a cancellation of vote transaction, and sends the tx if it may success.",
@@ -152,7 +152,7 @@ var cancelVote = &cobra.Command{
 	},
 }
 
-var startProxy = &cobra.Command{
+var startProxyCmd = &cobra.Command{
 	Use:     "startProxy",
 	Short:   "Become a vote proxy",
 	Long:    "Start proxy provides checks before creating a starting proxy transaction, and sends the tx if it may success.",
@@ -175,7 +175,7 @@ var startProxy = &cobra.Command{
 	},
 }
 
-var stopProxy = &cobra.Command{
+var stopProxyCmd = &cobra.Command{
 	Use:     "stopProxy",
 	Short:   "Back to a normal voter",
 	Long:    "Stop proxy provides checks before creating a stop proxy transaction, and sends the tx if it may success.",
@@ -198,7 +198,7 @@ var stopProxy = &cobra.Command{
 	},
 }
 
-var setProxy = &cobra.Command{
+var setProxyCmd = &cobra.Command{
 	Use:     "setProxy",
 	Short:   "Vote by proxy ",
 	Long:    "Set proxy provides checks before creating a setting proxy transaction, and sends the tx if it may success.",
@@ -221,7 +221,7 @@ var setProxy = &cobra.Command{
 	},
 }
 
-var cancelProxy = &cobra.Command{
+var cancelProxyCmd = &cobra.Command{
 	Use:     "cancelProxy",
 	Short:   "Cancel vote by proxy ",
 	Long:    "Cancel proxy provides checks before creating a transaction of cancel setting proxy , and sends the tx if it may success.",

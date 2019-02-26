@@ -32,11 +32,11 @@ func init() {
 		unStakeCmd,
 		registerWitnessCmd,
 		unregisterWitnessCmd,
-		vote,
-		cancelVote,
-		startProxy,
-		stopProxy,
-		setProxy,
-		cancelProxy,
+		voteCmd,
+		cancelVoteCmd,
+		startProxyCmd,
+		stopProxyCmd,
+		setProxyCmd,
+		cancelProxyCmd,
 		queryCmd)
 }
