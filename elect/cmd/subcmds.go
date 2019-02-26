@@ -109,7 +109,7 @@ var unregisterWitnessCmd = &cobra.Command{
 var vote = &cobra.Command{
 	Use:     "vote",
 	Short:   "Vote witness candidate, up to 30 witnesses",
-	Long:    "Vote provides pre-check before create a voting witness transaction, and sends the tx if it may success.",
+	Long:    "Vote provides checks before creating a voting witness transaction, and sends the tx if it may success.",
 	Example: `elect vote "0x123....456" "0x789...123"`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) <= 0 {
@@ -125,6 +125,29 @@ var vote = &cobra.Command{
 			fmt.Printf("error: %s\n", err)
 		} else {
 			fmt.Printf("vote witness transaction send success, tx hash: %s\n", txhash.String())
+		}
+	},
+}
+
+var cancelVote = &cobra.Command{
+	Use:     "cancelVote",
+	Short:   "Cancel the vote for witness candidate",
+	Long:    "Cancel vote provides checks before creating a cancellation vote transaction, and sends the tx if it may success.",
+	Example: `elect cancelVote`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) > 0 {
+			cmd.Help()
+			return
+		}
+
+		e, err := elect.NewElection()
+		if err != nil {
+			panic(err)
+		}
+		if txhash, err := e.CancelVote(); err != nil {
+			fmt.Printf("error: %s\n", err)
+		} else {
+			fmt.Printf("cancel vote witness transaction send success, tx hash: %s\n", txhash.String())
 		}
 	},
 }

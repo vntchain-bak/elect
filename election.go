@@ -257,6 +257,32 @@ func (e *Election) VoteWitness(wits []string) (common.Hash, error) {
 	return e.signAndSendTx(unSignTx)
 }
 
+func (e *Election) CancelVote() (common.Hash, error) {
+	// 未设置代理、被投票的见证人列表为空
+	vote, err := e.vc.VoteAt(e.ctx, e.cfg.Sender)
+	if err != nil {
+		if err.Error() == errNotFound {
+			return emptyHash, fmt.Errorf("not vote before")
+		}
+		return emptyHash, err
+	}
+	if vote != nil {
+		if vote.Proxy != emptyAddr {
+			return emptyHash, fmt.Errorf("please use cancelProxy to unset your proxy")
+		} else if len(vote.VoteCandidates) == 0 {
+			return emptyHash, fmt.Errorf("you didn't vote for any witness")
+		}
+	}
+
+	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, 30000,
+		big.NewInt(18000000000), "cancelVote")
+	if err != nil {
+		return emptyHash, err
+	}
+
+	return e.signAndSendTx(unSignTx)
+}
+
 func checkCandi(name string, website string) error {
 	// length check
 	if len(name) < 3 || len(name) > 20 {

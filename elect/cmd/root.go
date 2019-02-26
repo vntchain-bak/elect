@@ -33,5 +33,6 @@ func init() {
 		registerWitnessCmd,
 		unregisterWitnessCmd,
 		vote,
+		cancelVote,
 		queryCmd)
 }
