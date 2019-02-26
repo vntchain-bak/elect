@@ -198,6 +198,29 @@ var stopProxy = &cobra.Command{
 	},
 }
 
+var setProxy = &cobra.Command{
+	Use:     "setProxy",
+	Short:   "Vote by proxy ",
+	Long:    "Set proxy provides checks before creating a setting proxy transaction, and sends the tx if it may success.",
+	Example: `elect setProxy proxyAccountAddr`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) != 1 {
+			cmd.Help()
+			return
+		}
+
+		e, err := elect.NewElection()
+		if err != nil {
+			panic(err)
+		}
+		if txhash, err := e.SetProxy(args[0]); err != nil {
+			fmt.Printf("error: %s\n", err)
+		} else {
+			fmt.Printf("stop proxy transaction send success, tx hash: %s\n", txhash.String())
+		}
+	},
+}
+
 var queryCmd = &cobra.Command{
 	Use:   "query",
 	Short: "Query election data",

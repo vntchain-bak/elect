@@ -238,7 +238,7 @@ func (e *Election) VoteWitness(wits []string) (common.Hash, error) {
 		nextVoteTime := big.NewInt(0).Add(vote.LastVoteTimeStamp, big.NewInt(vntelection.OneDay))
 		now := big.NewInt(time.Now().Unix())
 		if now.Cmp(nextVoteTime) < 0 {
-			return emptyHash, fmt.Errorf("cannot vote twice within 24 hours")
+			return emptyHash, fmt.Errorf("cannot vote or set proxy twice within 24 hours")
 		}
 	}
 
@@ -330,6 +330,59 @@ func (e *Election) StopProxy() (common.Hash, error) {
 
 	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, 30000,
 		big.NewInt(18000000000), "stopProxy")
+	if err != nil {
+		return emptyHash, err
+	}
+
+	return e.signAndSendTx(unSignTx)
+}
+
+// SetProxy returns tx hash of setting vote proxy if passed condition check and tx has been send, or an error if failed.
+func (e *Election) SetProxy(p string) (common.Hash, error) {
+	proxyAddr := common.HexToAddress(p)
+	// 不可将自己设置为自己的代理人
+	if e.cfg.Sender.String() == proxyAddr.String() {
+		return emptyHash, fmt.Errorf("can not set self as your proxy")
+	}
+	// 有抵押的VNT代币
+	_, err := e.vc.StakeAt(e.ctx, e.cfg.Sender)
+	if err != nil {
+		if err.Error() == errNotFound {
+			err = fmt.Errorf("please stake before vote")
+		}
+		return emptyHash, err
+	}
+
+	vote, err := e.vc.VoteAt(e.ctx, e.cfg.Sender)
+	if err != nil && err.Error() != errNotFound {
+		return emptyHash, err
+	}
+	if vote != nil {
+		// 自己是代理人不可设置他人为代理
+		if vote.IsProxy {
+			return emptyHash, fmt.Errorf("can not set proxy when you are a proxy")
+		}
+
+		// 距离上次投票或设置代理超过24小时
+		nextVoteTime := big.NewInt(0).Add(vote.LastVoteTimeStamp, big.NewInt(vntelection.OneDay))
+		now := big.NewInt(time.Now().Unix())
+		if now.Cmp(nextVoteTime) < 0 {
+			return emptyHash, fmt.Errorf("cannot vote or set proxy twice within 24 hours")
+		}
+	}
+
+	// 要设置的代理人必须是代理
+	proxy, err := e.vc.VoteAt(e.ctx, proxyAddr)
+	if err != nil && err.Error() != errNotFound {
+		return emptyHash, fmt.Errorf("%s is not a proxy", p)
+	}
+	if proxy != nil && !proxy.IsProxy {
+		return emptyHash, fmt.Errorf("%s is not a proxy", p)
+	}
+
+	// 需要转换为地址
+	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, 30000,
+		big.NewInt(18000000000), "setProxy", proxyAddr)
 	if err != nil {
 		return emptyHash, err
 	}
