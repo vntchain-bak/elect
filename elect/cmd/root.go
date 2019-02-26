@@ -35,5 +35,6 @@ func init() {
 		vote,
 		cancelVote,
 		startProxy,
+		stopProxy,
 		queryCmd)
 }

@@ -175,6 +175,29 @@ var startProxy = &cobra.Command{
 	},
 }
 
+var stopProxy = &cobra.Command{
+	Use:     "stopProxy",
+	Short:   "Back to a normal voter",
+	Long:    "Stop proxy provides checks before creating a stop proxy transaction, and sends the tx if it may success.",
+	Example: `elect stopProxy`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) > 0 {
+			cmd.Help()
+			return
+		}
+
+		e, err := elect.NewElection()
+		if err != nil {
+			panic(err)
+		}
+		if txhash, err := e.StopProxy(); err != nil {
+			fmt.Printf("error: %s\n", err)
+		} else {
+			fmt.Printf("stop proxy transaction send success, tx hash: %s\n", txhash.String())
+		}
+	},
+}
+
 var queryCmd = &cobra.Command{
 	Use:   "query",
 	Short: "Query election data",

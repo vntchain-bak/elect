@@ -55,7 +55,7 @@ func (e *Election) init() error {
 	e.account = accounts.Account{Address: e.cfg.Sender}
 	e.wallet = loadKSWallet(e.cfg.KeystoreDir, e.account)
 	if e.wallet == nil {
-		return fmt.Errorf("Not find keystore file of account: %s, in directory: %s\n", e.cfg.Sender, e.cfg.KeystoreDir)
+		return fmt.Errorf("Not find keystore file of account: %s, in directory: %s\n", e.cfg.Sender.String(), e.cfg.KeystoreDir)
 	}
 
 	return nil
@@ -200,7 +200,7 @@ func (e *Election) UnregisterWitness() (common.Hash, error) {
 			}
 		}
 		if !find {
-			return emptyHash, fmt.Errorf("account: %s is not registered", e.cfg.Sender)
+			return emptyHash, fmt.Errorf("account: %s is not registered", e.cfg.Sender.String())
 		}
 	}
 
@@ -305,6 +305,31 @@ func (e *Election) StartProxy() (common.Hash, error) {
 
 	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, 30000,
 		big.NewInt(18000000000), "startProxy")
+	if err != nil {
+		return emptyHash, err
+	}
+
+	return e.signAndSendTx(unSignTx)
+}
+
+// StopProxy returns tx hash of back to a normal voter if passed condition check and tx has been send, or an error if failed.
+func (e *Election) StopProxy() (common.Hash, error) {
+	// 是代理人
+	voter, err := e.vc.VoteAt(e.ctx, e.cfg.Sender)
+	if err != nil {
+		if err.Error() == errNotFound {
+			return emptyHash, fmt.Errorf("you are not a vote proxy, no need stop proxy")
+		}
+		return emptyHash, err
+	}
+	if voter != nil {
+		if !voter.IsProxy {
+			return emptyHash, fmt.Errorf("you are not a vote proxy, no need stop proxy")
+		}
+	}
+
+	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, 30000,
+		big.NewInt(18000000000), "stopProxy")
 	if err != nil {
 		return emptyHash, err
 	}
