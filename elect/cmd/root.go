@@ -37,5 +37,6 @@ func init() {
 		startProxy,
 		stopProxy,
 		setProxy,
+		cancelProxy,
 		queryCmd)
 }

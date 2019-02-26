@@ -390,6 +390,29 @@ func (e *Election) SetProxy(p string) (common.Hash, error) {
 	return e.signAndSendTx(unSignTx)
 }
 
+// CancelProxy returns tx hash of cancel setting vote proxy if passed condition check and tx has been send, or an error if failed.
+func (e *Election) CancelProxy() (common.Hash, error) {
+	// 设置过代理人
+	voter, err := e.vc.VoteAt(e.ctx, e.cfg.Sender)
+	if err != nil {
+		if err.Error() == errNotFound {
+			return emptyHash, fmt.Errorf("you have no proxy, no need cancel proxy")
+		}
+		return emptyHash, err
+	}
+	if voter != nil && voter.Proxy == emptyAddr {
+		return emptyHash, fmt.Errorf("you have no proxy, no need cancel proxy")
+	}
+
+	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, 30000,
+		big.NewInt(18000000000), "cancelProxy")
+	if err != nil {
+		return emptyHash, err
+	}
+
+	return e.signAndSendTx(unSignTx)
+}
+
 func checkCandi(name string, website string) error {
 	// length check
 	if len(name) < 3 || len(name) > 20 {

@@ -132,7 +132,7 @@ var vote = &cobra.Command{
 var cancelVote = &cobra.Command{
 	Use:     "cancelVote",
 	Short:   "Cancel the vote for witness candidate",
-	Long:    "Cancel vote provides checks before creating a cancellation vote transaction, and sends the tx if it may success.",
+	Long:    "Cancel vote provides checks before creating a cancellation of vote transaction, and sends the tx if it may success.",
 	Example: `elect cancelVote`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) > 0 {
@@ -217,6 +217,29 @@ var setProxy = &cobra.Command{
 			fmt.Printf("error: %s\n", err)
 		} else {
 			fmt.Printf("stop proxy transaction send success, tx hash: %s\n", txhash.String())
+		}
+	},
+}
+
+var cancelProxy = &cobra.Command{
+	Use:     "cancelProxy",
+	Short:   "Cancel vote by proxy ",
+	Long:    "Cancel proxy provides checks before creating a transaction of cancel setting proxy , and sends the tx if it may success.",
+	Example: `elect cancelProxy`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) > 0 {
+			cmd.Help()
+			return
+		}
+
+		e, err := elect.NewElection()
+		if err != nil {
+			panic(err)
+		}
+		if txhash, err := e.CancelProxy(); err != nil {
+			fmt.Printf("error: %s\n", err)
+		} else {
+			fmt.Printf("cancel proxy transaction send success, tx hash: %s\n", txhash.String())
 		}
 	},
 }
