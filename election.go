@@ -287,6 +287,31 @@ func (e *Election) CancelVote() (common.Hash, error) {
 	return e.signAndSendTx(unSignTx)
 }
 
+// StartProxy returns tx hash of becoming a vote proxy if passed condition check and tx has been send, or an error if failed.
+func (e *Election) StartProxy() (common.Hash, error) {
+	// 已经开启了代理功能，不可重复开启。
+	// 已经设置了代理人，不可开启代理功能。
+	voter, err := e.vc.VoteAt(e.ctx, e.cfg.Sender)
+	if err != nil && err.Error() != errNotFound {
+		return emptyHash, err
+	}
+	if voter != nil {
+		if voter.IsProxy {
+			return emptyHash, fmt.Errorf("you are vote proxy, no need start proxy again")
+		} else if voter.Proxy != emptyAddr {
+			return emptyHash, fmt.Errorf("can not become a vote proxy, when you have a vote proxy")
+		}
+	}
+
+	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, 30000,
+		big.NewInt(18000000000), "startProxy")
+	if err != nil {
+		return emptyHash, err
+	}
+
+	return e.signAndSendTx(unSignTx)
+}
+
 func checkCandi(name string, website string) error {
 	// length check
 	if len(name) < 3 || len(name) > 20 {
