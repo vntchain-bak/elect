@@ -151,6 +151,7 @@ func (e *Election) Unstake() (common.Hash, error) {
 	return e.signAndSendTx(unSignTx)
 }
 
+// RegisterWitness returns tx hash of registering witness if passed condition check and tx has been send, or an error if failed.
 func (e *Election) RegisterWitness(nodeName, nodeUrl, website string) (common.Hash, error) {
 	// 节点名称必填，由数字和小写字母组成，长度在[3,20]区间。
 	// 网址必填，长度在[3,60]区间。
@@ -184,6 +185,7 @@ func (e *Election) RegisterWitness(nodeName, nodeUrl, website string) (common.Ha
 	return e.signAndSendTx(unSignTx)
 }
 
+// UnregisterWitness returns tx hash of unregistering witness if passed condition check and tx has been send, or an error if failed.
 func (e *Election) UnregisterWitness() (common.Hash, error) {
 	// 账号已注册为见证人
 	candidates, err := e.vc.WitnessCandidates(e.ctx)
@@ -211,6 +213,7 @@ func (e *Election) UnregisterWitness() (common.Hash, error) {
 	return e.signAndSendTx(unSignTx)
 }
 
+// VoteWitness returns tx hash of voting for witness if passed condition check and tx has been send, or an error if failed.
 func (e *Election) VoteWitness(wits []string) (common.Hash, error) {
 	// 所投候选人不得超过30人
 	if len(wits) > 30 {
@@ -257,6 +260,7 @@ func (e *Election) VoteWitness(wits []string) (common.Hash, error) {
 	return e.signAndSendTx(unSignTx)
 }
 
+// CancelVote returns tx hash of cancellation vote for witness if passed condition check and tx has been send, or an error if failed.
 func (e *Election) CancelVote() (common.Hash, error) {
 	// 未设置代理、被投票的见证人列表为空
 	vote, err := e.vc.VoteAt(e.ctx, e.cfg.Sender)
