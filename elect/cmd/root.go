@@ -11,7 +11,8 @@ var rootCmd = &cobra.Command{
 	Use:   "elect",
 	Short: "Election tools of VNT Chain",
 	Long: `This tool is used to take part in VNT hubble network election.
-You can do any operation of election contract, more information see help command.`,
+You can do any operation of election contract, more information
+see help command.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Using `elect -h` to see how to use elect.")
 	},
