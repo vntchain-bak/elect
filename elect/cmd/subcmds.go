@@ -26,7 +26,7 @@ and sends the transaction if it may execute success.`,
 			return
 		}
 
-		e, err := elect.NewElection("./cofig.json")
+		e, err := elect.NewElection("./config.json")
 		if err != nil {
 			panic(err)
 		}
@@ -50,7 +50,7 @@ and sends the transaction if it may execute success.`,
 			return
 		}
 
-		e, err := elect.NewElection("./cofig.json")
+		e, err := elect.NewElection("./config.json")
 		if err != nil {
 			panic(err)
 		}
