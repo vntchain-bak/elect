@@ -24,17 +24,19 @@ var (
 )
 
 type Election struct {
-	cfg    *Config
-	vc     *vntclient.Client
-	wallet accounts.Wallet // 用于签名的钱包
+	cfgPath string // config.json的路径
+	cfg     *Config
+	wallet  accounts.Wallet  // 用于签名的钱包
+	account accounts.Account // config中配置的账号
 
-	ctx     context.Context
-	account accounts.Account
+	vc  *vntclient.Client
+	ctx context.Context
 }
 
-func NewElection() (*Election, error) {
+func NewElection(cp string) (*Election, error) {
 	e := &Election{
-		ctx: context.Background(),
+		cfgPath: cp,
+		ctx:     context.Background(),
 	}
 	if err := e.init(); err != nil {
 		return nil, err
@@ -44,7 +46,7 @@ func NewElection() (*Election, error) {
 
 // init load config and set vntclient
 func (e *Election) init() error {
-	if err := e.loadCfg("./config.json"); err != nil {
+	if err := e.loadCfg(e.cfgPath); err != nil {
 		return err
 	}
 

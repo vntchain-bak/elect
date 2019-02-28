@@ -26,7 +26,7 @@ and sends the transaction if it may execute success.`,
 			return
 		}
 
-		e, err := elect.NewElection()
+		e, err := elect.NewElection("./cofig.json")
 		if err != nil {
 			panic(err)
 		}
@@ -50,7 +50,7 @@ and sends the transaction if it may execute success.`,
 			return
 		}
 
-		e, err := elect.NewElection()
+		e, err := elect.NewElection("./cofig.json")
 		if err != nil {
 			panic(err)
 		}
@@ -74,7 +74,7 @@ witness, and sends the transaction if it may execute success.`,
 			return
 		}
 
-		e, err := elect.NewElection()
+		e, err := elect.NewElection("./config.json")
 		if err != nil {
 			panic(err)
 		}
@@ -98,7 +98,7 @@ witness, and sends the transaction if it may execute success.`,
 			return
 		}
 
-		e, err := elect.NewElection()
+		e, err := elect.NewElection("./config.json")
 		if err != nil {
 			panic(err)
 		}
@@ -122,7 +122,7 @@ and sends the transaction if it may execute success.`,
 			return
 		}
 
-		e, err := elect.NewElection()
+		e, err := elect.NewElection("./config.json")
 		if err != nil {
 			panic(err)
 		}
@@ -146,7 +146,7 @@ the vote, and sends the transaction if it may execute success.`,
 			return
 		}
 
-		e, err := elect.NewElection()
+		e, err := elect.NewElection("./config.json")
 		if err != nil {
 			panic(err)
 		}
@@ -170,7 +170,7 @@ a proxy, and sends the transaction if it may execute success.`,
 			return
 		}
 
-		e, err := elect.NewElection()
+		e, err := elect.NewElection("./config.json")
 		if err != nil {
 			panic(err)
 		}
@@ -194,7 +194,7 @@ normal voter, and sends the transaction if it may execute success.`,
 			return
 		}
 
-		e, err := elect.NewElection()
+		e, err := elect.NewElection("./config.json")
 		if err != nil {
 			panic(err)
 		}
@@ -218,7 +218,7 @@ as your proxy, and sends the transaction if it may execute success.`,
 			return
 		}
 
-		e, err := elect.NewElection()
+		e, err := elect.NewElection("./config.json")
 		if err != nil {
 			panic(err)
 		}
@@ -242,7 +242,7 @@ your proxy, and sends the transaction if it may execute success.`,
 			return
 		}
 
-		e, err := elect.NewElection()
+		e, err := elect.NewElection("./config.json")
 		if err != nil {
 			panic(err)
 		}
@@ -272,7 +272,7 @@ and getting witness candidates list and rest bounty.`,
 			e   *elect.Election
 		)
 
-		e, err = elect.NewElection()
+		e, err = elect.NewElection("./config.json")
 		if err != nil {
 			panic(err)
 		}
