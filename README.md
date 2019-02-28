@@ -85,6 +85,41 @@ Elect支持以下功能：
     - rpcUrl：VNT网络上的任何开启RPC服务的节点的RPC URL（IP+端口），如果你本地运行了go-vnt节点，则填写`http://localhost:8880`
     - chainID：默认为0，即VNT Chain公链网络Hubble，如果你搭建了测试网，请填写你搭建网络chainID
 
+## 文档
+
+elect不仅是一个命令行工具，还可以作为package使用，接口文档请查看[这里](https://godoc.org/github.com/vntchain/elect)。
+
+下面是查询抵押代币的样例：
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/vntchain/elect"
+)
+
+func main() {
+	var (
+		err error
+		e   *elect.Election
+	)
+
+	if e, err = elect.NewElection("./config.json"); err != nil {
+		panic(err)
+	}
+
+	if ret, err := e.QueryStake(); err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(string(ret))
+	}
+}
+
+```
+
+
 ## 许可证
 
 所有`elect`仓库生成的二进制程序都采用GNU General Public License v3.0许可证, 具体请查看[COPYING](./COPYING)。
