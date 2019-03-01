@@ -3,6 +3,7 @@ package elect
 import (
 	"encoding/json"
 	"fmt"
+	"math/big"
 )
 
 var errNotFound = "not found"
@@ -47,11 +48,6 @@ func (e *Election) QueryCandidates() ([]byte, error) {
 }
 
 // QueryRestVNTBounty returns a integer of the rest vnt bounty in wei, or an error if failed.
-func (e *Election) QueryRestVNTBounty() ([]byte, error) {
-	restBounty, err := e.vc.RestVNTBounty(e.ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return []byte(restBounty.String() + " wei"), nil
+func (e *Election) QueryRestVNTBounty() (*big.Int, error) {
+	return e.vc.RestVNTBounty(e.ctx)
 }

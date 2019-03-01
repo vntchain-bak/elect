@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"math/big"
 	"strconv"
 
 	"github.com/spf13/cobra"
@@ -285,7 +286,13 @@ and getting witness candidates list and rest bounty.`,
 		case "candidates":
 			ret, err = e.QueryCandidates()
 		case "rest":
-			ret, err = e.QueryRestVNTBounty()
+			var rest *big.Int
+			rest, err = e.QueryRestVNTBounty()
+			if err != nil {
+				break
+			}
+
+			ret = []byte(rest.String() + " wei")
 		default:
 			fmt.Printf("error: query not support %s\n", args[0])
 			fmt.Printf("\nQuery help:\n")
