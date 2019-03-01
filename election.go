@@ -23,6 +23,9 @@ var (
 	emptyAddr = common.Address{}
 )
 
+// Election creates transactions and sends to hubble network nodes using RPC.
+// It checks conditions before creating transaction, signs the transaction
+// with your account and password.
 type Election struct {
 	cfgPath string // config.json的路径
 	cfg     *Config
@@ -33,6 +36,7 @@ type Election struct {
 	ctx context.Context
 }
 
+// NewElection returns a Election, or an error if initializing Election failed.
 func NewElection(cp string) (*Election, error) {
 	e := &Election{
 		cfgPath: cp,

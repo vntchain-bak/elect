@@ -7,6 +7,7 @@ import (
 
 var errNotFound = "not found"
 
+// QueryStake returns stake information of the account in json format, or an error if failed.
 func (e *Election) QueryStake() ([]byte, error) {
 	stake, err := e.vc.StakeAt(e.ctx, e.cfg.Sender)
 	if err != nil {
@@ -19,6 +20,7 @@ func (e *Election) QueryStake() ([]byte, error) {
 	return json.Marshal(stake)
 }
 
+// QueryVote returns vote information of the account in json format, or an error if failed.
 func (e *Election) QueryVote() ([]byte, error) {
 	voter, err := e.vc.VoteAt(e.ctx, e.cfg.Sender)
 	if err != nil {
@@ -31,6 +33,7 @@ func (e *Election) QueryVote() ([]byte, error) {
 	return json.Marshal(voter)
 }
 
+// QueryCandidates returns a witnesses list in json format, or an error if failed.
 func (e *Election) QueryCandidates() ([]byte, error) {
 	candidates, err := e.vc.WitnessCandidates(e.ctx)
 	if err != nil {
@@ -43,6 +46,7 @@ func (e *Election) QueryCandidates() ([]byte, error) {
 	return json.Marshal(candidates)
 }
 
+// QueryRestVNTBounty returns a integer of the rest vnt bounty in wei, or an error if failed.
 func (e *Election) QueryRestVNTBounty() ([]byte, error) {
 	restBounty, err := e.vc.RestVNTBounty(e.ctx)
 	if err != nil {
