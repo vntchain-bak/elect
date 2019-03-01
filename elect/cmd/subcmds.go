@@ -127,7 +127,7 @@ and sends the transaction if it may execute success.`,
 		if err != nil {
 			panic(err)
 		}
-		if txhash, err := e.VoteWitness(args); err != nil {
+		if txhash, err := e.Vote(args); err != nil {
 			fmt.Printf("error: %s\n", err)
 		} else {
 			fmt.Printf("vote witness transaction send success, transaction hash: %s\n", txhash.String())

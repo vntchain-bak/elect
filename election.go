@@ -37,9 +37,9 @@ type Election struct {
 }
 
 // NewElection returns a Election, or an error if initializing Election failed.
-func NewElection(cp string) (*Election, error) {
+func NewElection(configPath string) (*Election, error) {
 	e := &Election{
-		cfgPath: cp,
+		cfgPath: configPath,
 		ctx:     context.Background(),
 	}
 	if err := e.init(); err != nil {
@@ -219,10 +219,10 @@ func (e *Election) UnregisterWitness() (common.Hash, error) {
 	return e.signAndSendTx(unSignTx)
 }
 
-// VoteWitness returns tx hash of voting for witness if passed condition check and tx has been send, or an error if failed.
-func (e *Election) VoteWitness(wits []string) (common.Hash, error) {
+// Vote returns tx hash of voting for witness if passed condition check and tx has been send, or an error if failed.
+func (e *Election) Vote(witnessAddr []string) (common.Hash, error) {
 	// 所投候选人不得超过30人
-	if len(wits) > 30 {
+	if len(witnessAddr) > 30 {
 		return emptyHash, fmt.Errorf("vote too may witness, at most 30")
 	}
 
@@ -249,8 +249,8 @@ func (e *Election) VoteWitness(wits []string) (common.Hash, error) {
 	}
 
 	// 需要转换为地址
-	witnesses := make([]common.Address, len(wits))
-	for i, w := range wits {
+	witnesses := make([]common.Address, len(witnessAddr))
+	for i, w := range witnessAddr {
 		if len(w) != len(emptyAddr.String()) {
 			return emptyHash, fmt.Errorf("invalid witness address: %s", w)
 		}
@@ -344,8 +344,8 @@ func (e *Election) StopProxy() (common.Hash, error) {
 }
 
 // SetProxy returns tx hash of setting vote proxy if passed condition check and tx has been send, or an error if failed.
-func (e *Election) SetProxy(p string) (common.Hash, error) {
-	proxyAddr := common.HexToAddress(p)
+func (e *Election) SetProxy(addr string) (common.Hash, error) {
+	proxyAddr := common.HexToAddress(addr)
 	// 不可将自己设置为自己的代理人
 	if e.cfg.Sender.String() == proxyAddr.String() {
 		return emptyHash, fmt.Errorf("can not set self as your proxy")
@@ -380,10 +380,10 @@ func (e *Election) SetProxy(p string) (common.Hash, error) {
 	// 要设置的代理人必须是代理
 	proxy, err := e.vc.VoteAt(e.ctx, proxyAddr)
 	if err != nil && err.Error() != errNotFound {
-		return emptyHash, fmt.Errorf("%s is not a proxy", p)
+		return emptyHash, fmt.Errorf("%s is not a proxy", addr)
 	}
 	if proxy != nil && !proxy.IsProxy {
-		return emptyHash, fmt.Errorf("%s is not a proxy", p)
+		return emptyHash, fmt.Errorf("%s is not a proxy", addr)
 	}
 
 	// 需要转换为地址
