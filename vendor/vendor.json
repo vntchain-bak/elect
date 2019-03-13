@@ -793,13 +793,13 @@
 			"revisionTime": "2014-07-29T21:59:57Z"
 		},
 		{
-			"checksumSHA1": "t0mxvjAG1AcelzQSZoZUjgSjGrA=",
+			"checksumSHA1": "od5/3ZA9/jU/0Uy+B+yZR3Jv6E4=",
 			"path": "github.com/vntchain/go-vnt",
-			"revision": "48701c98460c331e7f4c4f0c3e99cba890e3ddc8",
-			"revisionTime": "2019-02-28T01:50:32Z",
+			"revision": "a9d746dbfac142a579b4b0174f19d0af5a3bdd11",
+			"revisionTime": "2019-03-13T02:55:39Z",
 			"tree": true,
-			"version": "vntclient_addapi",
-			"versionExact": "vntclient_addapi"
+			"version": "=develop",
+			"versionExact": "develop"
 		},
 		{
 			"checksumSHA1": "ITaebI1Zy3BYlpJW+2KMSYaZOqk=",
