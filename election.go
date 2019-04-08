@@ -261,7 +261,7 @@ func (e *Election) Vote(witnessAddr []string) (common.Hash, error) {
 		witnesses[i] = common.HexToAddress(w)
 	}
 
-	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, 30000,
+	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, 60000,
 		big.NewInt(18000000000), "voteWitnesses", witnesses)
 	if err != nil {
 		return emptyHash, err
