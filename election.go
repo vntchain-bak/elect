@@ -107,10 +107,15 @@ func loadKSWallet(ksDir string, account accounts.Account) accounts.Wallet {
 }
 
 // Stake returns a tx hash of staking VNT if passed condition check and tx has been send, or an error if failed.
-func (e *Election) Stake(stakeCnt int) (common.Hash, error) {
+func (e *Election) Stake(stakeCnt string) (common.Hash, error) {
+	stake, ok := big.NewInt(0).SetString(stakeCnt, 10)
+	if !ok {
+		return emptyHash, fmt.Errorf("big.int set string error, input = %s", stakeCnt)
+	}
+
 	// 至少1个VNT
-	if stakeCnt <= 1 {
-		return emptyHash, fmt.Errorf("stakeCnt = %d is less than 1 VNT", stakeCnt)
+	if stake.Cmp(big.NewInt(1)) <= 0 {
+		return emptyHash, fmt.Errorf("stake = %s is less than 1 VNT", stake.String())
 	}
 
 	// 抵押数不得多于自己的VNT数量
@@ -118,7 +123,6 @@ func (e *Election) Stake(stakeCnt int) (common.Hash, error) {
 	if err != nil {
 		return emptyHash, fmt.Errorf("Query balance of account:%s failed, err: %s\n", e.cfg.Sender.String(), err)
 	}
-	stake := big.NewInt(int64(stakeCnt))
 	stakeWei := big.NewInt(0).Mul(stake, big.NewInt(1e+18))
 	if stakeWei.Cmp(b) > 0 {
 		return emptyHash, fmt.Errorf("stake more than your balance. stake = %s wei, balance = %s wei", stakeWei.String(), b.String())
