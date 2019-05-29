@@ -114,7 +114,7 @@ func (e *Election) Stake(stakeCnt string) (common.Hash, error) {
 	}
 
 	// 至少1个VNT
-	if stake.Cmp(big.NewInt(1)) <= 0 {
+	if stake.Cmp(big.NewInt(1)) < 0 {
 		return emptyHash, fmt.Errorf("stake = %s is less than 1 VNT", stake.String())
 	}
 
