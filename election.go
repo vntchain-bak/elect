@@ -128,7 +128,7 @@ func (e *Election) Stake(stakeCnt string) (common.Hash, error) {
 		return emptyHash, fmt.Errorf("stake more than your balance. stake = %s wei, balance = %s wei", stakeWei.String(), b.String())
 	}
 
-	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, 30000, big.NewInt(18000000000), "stake", stake)
+	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, stakeWei, 30000, big.NewInt(18000000000), "$stake")
 	if err != nil {
 		return emptyHash, err
 	}
@@ -153,7 +153,7 @@ func (e *Election) Unstake() (common.Hash, error) {
 		}
 	}
 
-	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, 30000, big.NewInt(18000000000), "unStake")
+	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, common.Big0, 30000, big.NewInt(18000000000), "unStake")
 	if err != nil {
 		return emptyHash, err
 	}
@@ -186,7 +186,7 @@ func (e *Election) RegisterWitness(nodeName, nodeUrl, website string) (common.Ha
 		}
 	}
 
-	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, 30000, big.NewInt(18000000000),
+	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, common.Big0, 30000, big.NewInt(18000000000),
 		"registerWitness", []byte(nodeUrl), []byte(website), []byte(nodeName))
 	if err != nil {
 		return emptyHash, err
@@ -214,7 +214,7 @@ func (e *Election) UnregisterWitness() (common.Hash, error) {
 		}
 	}
 
-	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, 30000,
+	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, common.Big0, 30000,
 		big.NewInt(18000000000), "unregisterWitness")
 	if err != nil {
 		return emptyHash, err
@@ -261,7 +261,7 @@ func (e *Election) Vote(witnessAddr []string) (common.Hash, error) {
 		witnesses[i] = common.HexToAddress(w)
 	}
 
-	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, 60000,
+	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, common.Big0, 60000,
 		big.NewInt(18000000000), "voteWitnesses", witnesses)
 	if err != nil {
 		return emptyHash, err
@@ -288,7 +288,7 @@ func (e *Election) CancelVote() (common.Hash, error) {
 		}
 	}
 
-	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, 30000,
+	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, common.Big0, 30000,
 		big.NewInt(18000000000), "cancelVote")
 	if err != nil {
 		return emptyHash, err
@@ -313,7 +313,7 @@ func (e *Election) StartProxy() (common.Hash, error) {
 		}
 	}
 
-	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, 30000,
+	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, common.Big0, 30000,
 		big.NewInt(18000000000), "startProxy")
 	if err != nil {
 		return emptyHash, err
@@ -338,7 +338,7 @@ func (e *Election) StopProxy() (common.Hash, error) {
 		}
 	}
 
-	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, 30000,
+	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, common.Big0, 30000,
 		big.NewInt(18000000000), "stopProxy")
 	if err != nil {
 		return emptyHash, err
@@ -391,7 +391,7 @@ func (e *Election) SetProxy(addr string) (common.Hash, error) {
 	}
 
 	// 需要转换为地址
-	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, 30000,
+	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, common.Big0, 30000,
 		big.NewInt(18000000000), "setProxy", proxyAddr)
 	if err != nil {
 		return emptyHash, err
@@ -414,7 +414,7 @@ func (e *Election) CancelProxy() (common.Hash, error) {
 		return emptyHash, fmt.Errorf("you have no proxy, no need cancel proxy")
 	}
 
-	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, 30000,
+	unSignTx, err := e.vc.NewElectionTx(e.ctx, e.cfg.Sender, common.Big0, 30000,
 		big.NewInt(18000000000), "cancelProxy")
 	if err != nil {
 		return emptyHash, err
